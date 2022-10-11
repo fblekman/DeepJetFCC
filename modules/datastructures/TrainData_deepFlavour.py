@@ -5,6 +5,10 @@ import uproot as u
 import awkward as ak
 import pandas as pd
 
+
+print("Running the updated version...")
+
+
 GLOBAL_PREFIX = ""
 
 def uproot_root2array(fname, treename, stop=None, branches=None):
@@ -110,103 +114,85 @@ def map_prefix(elements):
 
 class TrainData_ParT(TrainData):
     def __init__(self):
+      
+        print("The code is actually run...")
 
         TrainData.__init__(self)        
         
         self.description = "ParT inputs"
         
-        self.truth_branches = ['isB','isBB','isGBB','isLeptonicB','isLeptonicB_C','isC','isGCC','isCC','isUD','isS','isG']
-        self.undefTruth=['isUndefined', 'isPU']
-        self.weightbranchX='jet_pt'
-        self.weightbranchY='jet_eta'
+        #self.truth_branches = ['isB','isBB','isGBB','isLeptonicB','isLeptonicB_C','isC','isGCC','isCC','isUD','isS','isG']
+        self.truth_branches = ['isB','isC','isU','isD','isS']
+        #self.undefTruth=['isUndefined', 'isPU']
+        self.undefTruth=['isUndefined']
+        self.weightbranchX='jets_pt'
+        self.weightbranchY='jets_eta'
         self.remove = True
         self.referenceclass= 'isB'  #'flatten'  #Choose 'flatten' for flat or one of the truth branch for ref
-        self.red_classes = ['cat_B','cat_C','cat_UDS','cat_G'] #reduced classes (flat only)
-        self.truth_red_fusion = [('isB','isBB','isGBB','isLeptonicB','isLeptonicB_C'),('isC','isGCC','isCC'),('isUD','isS'),('isG')] #Indicates how you are making the fusion of your truth branches to the reduced classes for the flat reweighting
-        self.class_weights = np.array([1.00,1.00,2.5,5.0], dtype=float)  #Ratio between our reduced classes (flat only)
-        self.weight_binX = np.array([15, 20, 26, 35, 46, 61, 80, 106, 141, 186, 247, 326, 432, 571, 756, 1000],dtype=float) #Flat reweighting
+        #self.red_classes = ['cat_B','cat_C','cat_UDS','cat_G'] #reduced classes (flat only)
+        self.red_classes = ['cat_B','cat_C','cat_U','cat_D','cat_S']
+        #self.truth_red_fusion = [('isB','isBB','isGBB','isLeptonicB','isLeptonicB_C'),('isC','isGCC','isCC'),('isUD','isS'),('isG')] #Indicates how you are making the fusion of your truth branches to the reduced classes for the flat reweighting
+        self.truth_red_fusion = [('isB'),('isC'),('isU'),('isD'),('isS')]
+        ##self.class_weights = np.array([1.00,1.00,2.5,5.0], dtype=float)  #Ratio between our reduced classes (flat only)
+        ##self.weight_binX = np.array([15, 20, 26, 35, 46, 61, 80, 106, 141, 186, 247, 326, 432, 571, 756, 1000],dtype=float) #Flat reweighting
         #self.weight_binX = np.arange(100,2001,100)
         #self.weight_binX = np.array([100,125,150,175,200,250,300,400,500,600,2000],dtype=float)
         #self.weight_binX = (np.exp(np.linspace(np.log(15), np.log(1000), 16))).tolist()
         #self.weight_binX = np.array([10,25,30,35,40,45,50,60,75,100,125,150,175,200,250,300,400,500,600,2000],dtype=float) #Ref reweighting
-        self.weight_binY = np.array(
-            [-2.5, -2.0, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5], dtype=float) #Flat reweighting
+        ##self.weight_binY = np.array([-2.5, -2.0, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5], dtype=float) #Flat reweighting
         #self.weight_binY = np.array([-2.5,-1.136,-0.516,-0.235,-0.107,-0.0484,-0.0220, 0.0220, 0.0484, 0.107, 0.235,0.516, 1.136, 2.5], dtype=float) #Flat-hybrid reweighting
          #self.weight_binY = np.array(
          #   [-2.5, -2.0, -1.5, -1.0, -0.5, 0.5, 1.0, 1.5, 2.0, 2.5], dtype=float) #Ref reweighting
 
-        self.global_branches = ['jet_pt', 'jet_eta',
-                                'nCpfcand','nNpfcand',
-                                'nsv','npv',
-                                'TagVarCSV_trackSumJetEtRatio',
-                                'TagVarCSV_trackSumJetDeltaR',
-                                'TagVarCSV_vertexCategory',
-                                'TagVarCSV_trackSip2dValAboveCharm',
-                                'TagVarCSV_trackSip2dSigAboveCharm',
-                                'TagVarCSV_trackSip3dValAboveCharm',
-                                'TagVarCSV_trackSip3dSigAboveCharm',
-                                'TagVarCSV_jetNSelectedTracks',
-                                'TagVarCSV_jetNTracksEtaRel']
-                
-        
-        self.cpf_branches = ['Cpfcan_BtagPf_trackEtaRel',
-                             'Cpfcan_BtagPf_trackPtRel',
-                             'Cpfcan_BtagPf_trackPPar',
-                             'Cpfcan_BtagPf_trackDeltaR',
-                             'Cpfcan_BtagPf_trackPParRatio',
-                             'Cpfcan_BtagPf_trackSip2dVal',
-                             'Cpfcan_BtagPf_trackSip2dSig',
-                             'Cpfcan_BtagPf_trackSip3dVal',
-                             'Cpfcan_BtagPf_trackSip3dSig',
-                             'Cpfcan_BtagPf_trackJetDistVal',
-                             'Cpfcan_pt', 'Cpfcan_eta', 'Cpfcan_phi',
-                             'Cpfcan_drminsv',
-                             #'Cpfcan_distminsv',
-                             'Cpfcan_VTX_ass',
-                             'Cpfcan_puppiw',
-                             'Cpfcan_chi2',
-                             'Cpfcan_quality',
-                             'Cpfcan_nhitpixelBarrelLayer1', 'Cpfcan_nhitpixelBarrelLayer2', 'Cpfcan_nhitpixelBarrelLayer3', 'Cpfcan_nhitpixelBarrelLayer4',
-                             'Cpfcan_nhitpixelEndcapLayer1', 'Cpfcan_nhitpixelEndcapLayer2', 'Cpfcan_numberOfValidHits', 'Cpfcan_numberOfValidPixelHits',
-                             'Cpfcan_numberOfValidStripHits', 'Cpfcan_numberOfValidStripTIBHits', 'Cpfcan_numberOfValidStripTIDHits', 'Cpfcan_numberOfValidStripTOBHits',
-                             'Cpfcan_numberOfValidStripTECHits']
 
+        self.class_weights = [1.00,1.00,1.00,1.00,1.00]  #Ratio between our reduced classes (flat only)
+        self.weight_binX = np.array([35.0,40.0,45.0])
+        #self.weight_binX = np.array([
+        #    10,25,30,35,40,45,50,60,75,100,
+        #    125,150,175,200,250,300,400,500,
+        #    600,2000],dtype=float)
+
+        self.weight_binY = np.array(
+            [-2.5,-2.,-1.5,-1.,-0.5,0.5,1,1.5,2.,2.5],
+            dtype=float
+        )
+
+        self.global_branches = ['jets_pt', 'jets_eta',
+                                'jets_phi', 'jets_e',
+                                #'nCpfcand','nNpfcand',
+                                'jets_theta',
+                                'jets_p','jets_m',
+                                ]
+
+
+        self.cpf_branches = ['RPj_charged_p',
+                             'RPj_charged_theta',
+                             'RPj_charged_phi',
+                             'RPj_charged_mass',
+                             #'Cpfcan_BtagPf_trackDeltaR',
+                             #'Cpfcan_quality',
+                             'RPj_charged_Z0',
+                             'RPj_charged_D0',
+                             #'RPj_charged_Z0_sig',
+                             #'RPj_charged_D0_sig'
+                             #'RPj_charged_dTheta'
+                             #'RPj_charged_dPhi'
+                             #'RPj_charged_pRel'
+                             'RPj_charged_isMuon'
+                             #'RPj_charged_isElectron'
+                             ]
         self.n_cpf = 25
 
-        self.npf_branches = ['Npfcan_pt', 'Npfcan_eta', 'Npfcan_phi', 'Npfcan_deltaR','Npfcan_isGamma','Npfcan_HadFrac','Npfcan_drminsv','Npfcan_puppiw']
+        self.npf_branches = ['RPj_neutral_p','RPj_neutral_pRel','RPj_neutral_isPhoton']
         self.n_npf = 25
 
-        self.vtx_branches = ['sv_pt','sv_deltaR',
-                             'sv_mass',
-                             'sv_eta',
-                             'sv_phi',
-                             'sv_ntracks',
-                             'sv_chi2',
-                             'sv_normchi2',
-                             'sv_dxy',
-                             'sv_dxysig',
-                             'sv_d3d',
-                             'sv_d3dsig',
-                             'sv_costhetasvpv',
-                             'sv_enratio',
+        self.vtx_branches = ['sv_mass','sv_p','sv_ntracks','sv_dxy','sv_d3d',
         ]
+        self.n_vtx = 4
 
-        self.n_vtx = 5
-        
-        self.cpf_pts_branches = ['Cpfcan_pt','Cpfcan_eta',
-                                 'Cpfcan_phi', 'Cpfcan_e',
-                                 'Cpfcan_nhitpixelBarrelLayer1', 'Cpfcan_nhitpixelBarrelLayer2',
-                                 'Cpfcan_nhitpixelEndcapLayer1', 'Cpfcan_nhitpixelEndcapLayer2',
-                                 'Cpfcan_numberOfValidHits', 'Cpfcan_numberOfValidPixelHits']
-        
-        self.npf_pts_branches = ['Npfcan_pt','Npfcan_eta', 
-                                 'Npfcan_phi', 'Npfcan_e']
-        
-        self.vtx_pts_branches = ['sv_pt','sv_eta',
-                                 'sv_phi','sv_e']
+        #self.reduced_truth = ['isB','isBB','isGBB','isLeptonicB','isLeptonicB_C','isC','isGCC','isCC','isUD','isS','isG']
+        self.reduced_truth = ['isB','isC','isU','isD','isS']
 
-        self.reduced_truth = ['isB','isBB','isLeptonicB','isC','isUDS','isG']
-        #self.reduced_truth = ['isB','isC','isUDS','isG']
         
     def createWeighterObjects(self, allsourcefiles):
         # 
@@ -275,25 +261,27 @@ class TrainData_ParT(TrainData):
             
             b = uproot_arrays[b'isB']
             
-            bb = uproot_arrays[b'isBB']
-            gbb = uproot_arrays[b'isGBB']
+            #bb = uproot_arrays[b'isBB']
+            #gbb = uproot_arrays[b'isGBB']
             
-            bl = uproot_arrays[b'isLeptonicB']
-            blc = uproot_arrays[b'isLeptonicB_C']
-            lepb = bl+blc
+            #bl = uproot_arrays[b'isLeptonicB']
+            #blc = uproot_arrays[b'isLeptonicB_C']
+            #lepb = bl+blc
             
             c = uproot_arrays[b'isC']
-            cc = uproot_arrays[b'isCC']
-            gcc = uproot_arrays[b'isGCC']
+            #cc = uproot_arrays[b'isCC']
+            #gcc = uproot_arrays[b'isGCC']
             
-            ud = uproot_arrays[b'isUD']
+            u = uproot_arrays[b'isU']
+            d = uproot_arrays[b'isD']
             s = uproot_arrays[b'isS']
-            uds = ud+s
+            #uds = ud+s
             
-            g = uproot_arrays[b'isG']
+            #g = uproot_arrays[b'isG']
             
-            return np.vstack((b,bb+gbb,lepb,c+cc+gcc,uds,g)).transpose()
+            #return np.vstack((b,bb+gbb,lepb,c+cc+gcc,uds,g)).transpose()
             #return np.vstack((b+bb+gbb+lepb,c+cc+gcc,uds,g)).transpose()
+            return np.vstack((b,c,s,u,d)).transpose()
         
         print('reading '+filename)
         
@@ -324,17 +312,17 @@ class TrainData_ParT(TrainData):
                                          self.vtx_branches,self.n_vtx,self.nsamples,
                                      treename='deepntuplizer/tree', flat = False)
 
-        cpf_pts = uproot_tree_to_numpy(filename,
-                                        self.cpf_pts_branches,self.n_cpf,self.nsamples,
-                                        treename='deepntuplizer/tree', flat = True)
+        #cpf_pts = uproot_tree_to_numpy(filename,
+        #                                self.cpf_pts_branches,self.n_cpf,self.nsamples,
+        #                                treename='deepntuplizer/tree', flat = True)
 
-        npf_pts = uproot_tree_to_numpy(filename,
-                                     self.npf_pts_branches,self.n_npf,self.nsamples,
-                                     treename='deepntuplizer/tree', flat = False)
+        #npf_pts = uproot_tree_to_numpy(filename,
+        #                             self.npf_pts_branches,self.n_npf,self.nsamples,
+        #                             treename='deepntuplizer/tree', flat = False)
 
-        vtx_pts = uproot_tree_to_numpy(filename,
-                                         self.vtx_pts_branches,self.n_vtx,self.nsamples,
-                                     treename='deepntuplizer/tree', flat = False)
+        #vtx_pts = uproot_tree_to_numpy(filename,
+        #                                 self.vtx_pts_branches,self.n_vtx,self.nsamples,
+        #                             treename='deepntuplizer/tree', flat = False)
 
 
 #        import uproot3 as uproot
@@ -348,9 +336,9 @@ class TrainData_ParT(TrainData):
         x_cpf = x_cpf.astype(dtype='float32', order='C')
         x_npf = x_npf.astype(dtype='float32', order='C')
         x_vtx = x_vtx.astype(dtype='float32', order='C')
-        cpf_pts = cpf_pts.astype(dtype='float32', order='C')
-        npf_pts = npf_pts.astype(dtype='float32', order='C')
-        vtx_pts = vtx_pts.astype(dtype='float32', order='C')
+        #cpf_pts = cpf_pts.astype(dtype='float32', order='C')
+        #npf_pts = npf_pts.astype(dtype='float32', order='C')
+        #vtx_pts = vtx_pts.astype(dtype='float32', order='C')
         
         if self.remove:
 #            import uproot as u
@@ -367,11 +355,16 @@ class TrainData_ParT(TrainData):
    #             stop = None,
     #            branches = b
      #       )
+            print("..............................")
+            print(type(weighterobjects['weigther']))
+            print(weighterobjects['weigther'])
+            print("..............................")
+            #exit()
             notremoves=weighterobjects['weigther'].createNotRemoveIndices(for_remove, use_uproot = True)
             undef=for_remove['isUndefined']
             notremoves-=undef
-            pu=for_remove['isPU']
-            notremoves-=pu
+            ##pu=for_remove['isPU']
+            ##notremoves-=pu
             print('took ', sw.getAndReset(), ' to create remove indices')
 
 #        random_pick = np.random.rand(x_global.shape[0])
@@ -391,9 +384,9 @@ class TrainData_ParT(TrainData):
             x_cpf=x_cpf[notremoves > 0]
             x_npf=x_npf[notremoves > 0]
             x_vtx=x_vtx[notremoves > 0]
-            cpf_pts=cpf_pts[notremoves > 0]
-            npf_pts=npf_pts[notremoves > 0]
-            vtx_pts=vtx_pts[notremoves > 0]
+            #cpf_pts=cpf_pts[notremoves > 0]
+            #npf_pts=npf_pts[notremoves > 0]
+            #vtx_pts=vtx_pts[notremoves > 0]
             truth=truth[notremoves > 0]
 
         newnsamp=x_global.shape[0]
@@ -404,11 +397,20 @@ class TrainData_ParT(TrainData):
         x_cpf = np.where(np.isfinite(x_cpf), x_cpf, 0)
         x_npf = np.where(np.isfinite(x_npf), x_npf, 0)
         x_vtx = np.where(np.isfinite(x_vtx), x_vtx, 0)
-        cpf_pts = np.where(np.isfinite(cpf_pts), cpf_pts, 0)
-        npf_pts = np.where(np.isfinite(npf_pts), npf_pts, 0)
-        vtx_pts = np.where(np.isfinite(vtx_pts), vtx_pts, 0)
+        #cpf_pts = np.where(np.isfinite(cpf_pts), cpf_pts, 0)
+        #npf_pts = np.where(np.isfinite(npf_pts), npf_pts, 0)
+        #vtx_pts = np.where(np.isfinite(vtx_pts), vtx_pts, 0)
         
-        return [x_global, x_cpf, x_npf, x_vtx, cpf_pts, npf_pts, vtx_pts], [truth], []
+        #return [x_global, x_cpf, x_npf, x_vtx, cpf_pts, npf_pts, vtx_pts], [truth], []
+        print("x_global shape: "+str(x_global.shape))
+        print(x_global)
+        print("x_cpf shape: "+str(x_cpf.shape))
+        print(x_cpf)
+        print("x_npf shape: "+str(x_npf.shape))
+        print(x_npf)
+        print("x_vtx shape: "+str(x_vtx.shape))
+        print(x_vtx)
+        return [x_global, x_cpf, x_npf, x_vtx], [truth], []
 
     # defines how to write out the prediction
     def writeOutPrediction(self, predicted, features, truth, weights, outfilename, inputfile):

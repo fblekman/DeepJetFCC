@@ -26,6 +26,7 @@ import imp
 
 def train_loop(dataloader, nbatches, model, loss_fn, optimizer, device, epoch, epoch_pbar, acc_loss):
     for b in range(nbatches):
+        print("RUNNING LEGACY CARE!!!!!!!!!!!!!!")
         #should not happen unless files are broken (will give additional errors)
         #if dataloader.isEmpty():
          #   raise Exception("ran out of data") 
@@ -36,11 +37,10 @@ def train_loop(dataloader, nbatches, model, loss_fn, optimizer, device, epoch, e
         cpf = torch.Tensor(features_list[1]).to(device)
         npf = torch.Tensor(features_list[2]).to(device)
         vtx = torch.Tensor(features_list[3]).to(device)
-        v0 = torch.Tensor(features_list[4]).to(device)
         #pxl = torch.Tensor(features_list[4]).to(device)
         y = torch.Tensor(truth_list[0]).to(device)    
         # Compute prediction and loss
-        pred = model(glob,cpf,npf,vtx,v0)
+        pred = model(glob,cpf,npf,vtx)
         loss = loss_fn(pred, y.type_as(pred))
  
         # Backpropagation
@@ -76,12 +76,11 @@ def val_loop(dataloader, nbatches, model, loss_fn, device, epoch):
             cpf = torch.Tensor(features_list[1]).to(device)
             npf = torch.Tensor(features_list[2]).to(device)
             vtx = torch.Tensor(features_list[3]).to(device)
-            v0 = torch.Tensor(features_list[4]).to(device)
             #pxl = torch.Tensor(features_list[4]).to(device)
             y = torch.Tensor(truth_list[0]).to(device)    
             # Compute prediction and loss
             _, labels = y.max(dim=1)
-            pred = model(glob,cpf,npf,vtx,v0)
+            pred = model(glob,cpf,npf,vtx)
             
             test_loss += loss_fn(pred, y.type_as(pred)).item()
             correct += (pred.argmax(1) == labels).type(torch.float).sum().item()
@@ -232,10 +231,6 @@ class training_base(object):
     def trainModel(self, nepochs, batchsize, batchsize_use_sum_of_squares = False, extend_truth_list_by=0,
                    load_in_mem = False, max_files = -1, plot_batch_loss = False, **trainargs):
         
-        train_loss_numpy = [] 
-        val_loss_numpy = [] 
-        epoch_numpy = []
-        
         self._initTraining(batchsize, batchsize_use_sum_of_squares)
         print('starting training')
         if load_in_mem:
@@ -285,7 +280,7 @@ class training_base(object):
                 print('>>>> epoch', self.trainedepoches,"/",nepochs)
                 print('training batches: ',nbatches_train)
                 print('validation batches: ',nbatches_val)
-               
+                
                 with tqdm(total = nbatches_train) as epoch_pbar:
                     epoch_pbar.set_description(f'Epoch {self.trainedepoches + 1}')
 
@@ -304,10 +299,7 @@ class training_base(object):
                         self.best_loss = val_loss
                         self.saveModel(self.model, self.optimizer, self.trainedepoches, self.scheduler, self.best_loss, is_best = True)
 
-                    train_loss_numpy.append(train_loss.detach().cpu().numpy())
-                    val_loss_numpy.append(val_loss)
-                    epoch_numpy.append(self.trainedepoches)
-                    np.savez(self.outputDir+"training_params.npz", train_loss=np.array(train_loss_numpy), val_loss=np.array(val_loss_numpy), epoch=np.array(epoch_numpy))
+                    
                     self.saveModel(self.model, self.optimizer, self.trainedepoches, self.scheduler, self.best_loss, is_best = False)
                 
                 ###################traingen.shuffleFilelist()

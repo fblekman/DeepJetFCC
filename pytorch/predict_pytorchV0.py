@@ -34,6 +34,8 @@ from tqdm import tqdm
 inputdatafiles=[]
 inputdir=None
 
+print("RUNNING THE V0 VERS //////////////////////////////////")
+
 def test_loop(dataloader, model, nbatches, pbar):
     predictions = 0
     global_vars = 0
@@ -46,10 +48,11 @@ def test_loop(dataloader, model, nbatches, pbar):
             cpf = torch.Tensor(features_list[1]).to(device)
             npf = torch.Tensor(features_list[2]).to(device)
             vtx = torch.Tensor(features_list[3]).to(device)
+            v0 = torch.Tensor(features_list[4]).to(device)
             #pxl = torch.Tensor(features_list[4]).to(device)
             y = torch.Tensor(truth_list[0]).to(device)    
             # Compute prediction
-            pred = nn.Softmax(dim=1)(model(glob,cpf,npf,vtx)).cpu().numpy()
+            pred = nn.Softmax(dim=1)(model(glob,cpf,npf,vtx,v0)).cpu().numpy()
             if b == 0:
                 predictions = pred 
                 global_vars = glob.cpu().detach().numpy()
@@ -132,8 +135,7 @@ for inputfile in inputdatafiles:
     else:
         print('converting '+inputfile)
         td.readFromSourceFile(use_inputdir+"/"+inputfile, dc.weighterobjects, istraining=False)
-    print(dir(td))
-    print(td.getNumpyFeatureArrayNames())
+
     gen = TrainDataGenerator()
     if batchsize < 1:
         batchsize = dc.getBatchSize()

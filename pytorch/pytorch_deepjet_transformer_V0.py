@@ -71,6 +71,11 @@ class InputProcess(nn.Module):
         self.vtx_conv2 = InputConv(64,128)
         self.vtx_conv3 = InputConv(128,128)
 
+        self.v0_bn0 = torch.nn.BatchNorm1d(5, eps = 0.001, momentum = 0.1)
+        self.v0_conv1 = InputConv(5,64)
+        self.v0_conv2 = InputConv(64,128)
+        self.v0_conv3 = InputConv(128,128)
+
 #        self.pxl_bn0 = torch.nn.BatchNorm1d(7, eps = 0.001, momentum = 0.1)
  #       self.pxl_conv1 = InputConv(7,64)
   #      self.pxl_conv2 = InputConv(64,128)
@@ -90,13 +95,18 @@ class InputProcess(nn.Module):
         self.vtx_lin = torch.nn.Conv1d(64, 128, kernel_size=1)
         self.vtx_bn = torch.nn.BatchNorm1d(128, eps = 0.001, momentum = 0.1)
         self.vtx_act = nn.ReLU()
+        
+        self.v0_dropout = nn.Dropout(0.1)
+        self.v0_lin = torch.nn.Conv1d(64, 128, kernel_size=1)
+        self.v0_bn = torch.nn.BatchNorm1d(128, eps = 0.001, momentum = 0.1)
+        self.v0_act = nn.ReLU()
 
 #        self.pxl_dropout = nn.Dropout(0.1)
  #       self.pxl_lin = torch.nn.Conv1d(64, 128, kernel_size=1)
   #      self.pxl_bn = torch.nn.BatchNorm1d(128, eps = 0.001, momentum = 0.1)
    #     self.pxl_act = nn.ReLU()
 
-    def forward(self, cpf, npf, vtx, pxl):
+    def forward(self, cpf, npf, vtx, v0, pxl):
                 
         cpf = self.cpf_bn0(torch.transpose(cpf, 1, 2))
         cpf = self.cpf_conv1(cpf, cpf, skip = False)
@@ -118,6 +128,13 @@ class InputProcess(nn.Module):
         vtx = self.vtx_conv2(vtx, vtx_sc, skip = True)
         vtx = self.vtx_conv3(vtx, vtx, skip = True)
         vtx = torch.transpose(vtx, 1, 2)
+        
+        v0 = self.v0_bn0(torch.transpose(v0, 1, 2))
+        v0 = self.v0_conv1(v0, v0, skip = False)
+        v0_sc = self.v0_dropout(self.v0_bn(self.v0_act(self.v0_lin(v0))))
+        v0 = self.v0_conv2(v0, v0_sc, skip = True)
+        v0 = self.v0_conv3(v0, v0, skip = True)
+        v0 = torch.transpose(v0, 1, 2)
 
 #        pxl = self.pxl_bn0(torch.transpose(pxl, 1, 2))
  #       pxl = self.pxl_conv1(pxl, pxl, skip = False)
@@ -126,7 +143,7 @@ class InputProcess(nn.Module):
     #    pxl = self.pxl_conv3(pxl, pxl, skip = True)
      #   pxl = torch.transpose(pxl, 1, 2)
 
-        return cpf, npf, vtx#, pxl
+        return cpf, npf, vtx, v0#, pxl
     
 class DenseClassifier(nn.Module):
 
@@ -281,12 +298,12 @@ def _get_activation_fn(activation):
 
     raise RuntimeError("activation should be relu/gelu, not {}".format(activation))
     
-class DeepJetTransformer(nn.Module):
+class DeepJetTransformerV0(nn.Module):
 
     def __init__(self,
                  num_classes = 5,
                  **kwargs):
-        super(DeepJetTransformer, self).__init__(**kwargs)
+        super(DeepJetTransformerV0, self).__init__(**kwargs)
         
         self.InputProcess = InputProcess()
         self.DenseClassifier = DenseClassifier()
@@ -299,14 +316,14 @@ class DeepJetTransformer(nn.Module):
         self.EncoderLayer = HF_TransformerEncoderLayer(d_model=128, nhead=8, dropout = 0.1)
         self.Encoder = HF_TransformerEncoder(self.EncoderLayer, num_layers=3)
 
-    def forward(self, global_vars, cpf, npf, vtx):
+    def forward(self, global_vars, cpf, npf, vtx, v0):
 
 #        cpf[:,:,2] = torch.abs(cpf[:,:,2])
  #       npf[:,:,2] = torch.abs(npf[:,:,2])
         cpf = cpf[:,:,:16]
         pxl = 1
         
-        mask = torch.cat((cpf[:,:,0] == 0.0, npf[:,:,0] == 0.0, vtx[:,:,0] == 0.0),dim = 1)
+        mask = torch.cat((cpf[:,:,0] == 0.0, npf[:,:,0] == 0.0, vtx[:,:,0] == 0.0, v0[:,:,0] == 0.0),dim = 1)
 #        mask = torch.unsqueeze(mask, 2)
  #       mask = tile(mask, 0, 8)
   #      mask = torch.unsqueeze(mask[:,:,0] != 0, 2).type(torch.cuda.FloatTensor)
@@ -315,9 +332,9 @@ class DeepJetTransformer(nn.Module):
         print(self.global_bn)
         print(global_vars.shape)
         global_vars = self.global_bn(global_vars)
-        cpf, npf, vtx = self.InputProcess(cpf[:,:,:], npf, vtx, pxl)
+        cpf, npf, vtx, v0 = self.InputProcess(cpf[:,:,:], npf, vtx, v0, pxl)
         
-        enc = torch.cat((cpf,npf,vtx), dim = 1)
+        enc = torch.cat((cpf,npf,vtx,v0), dim = 1)
         enc = self.Encoder(enc, mask)
         enc = self.pooling(enc)
         

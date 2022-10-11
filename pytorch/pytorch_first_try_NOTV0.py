@@ -36,11 +36,12 @@ def train_loop(dataloader, nbatches, model, loss_fn, optimizer, device, epoch, e
         cpf = torch.Tensor(features_list[1]).to(device)
         npf = torch.Tensor(features_list[2]).to(device)
         vtx = torch.Tensor(features_list[3]).to(device)
-        v0 = torch.Tensor(features_list[4]).to(device)
+        #v0 = torch.Tensor(features_list[4]).to(device)
         #pxl = torch.Tensor(features_list[4]).to(device)
         y = torch.Tensor(truth_list[0]).to(device)    
         # Compute prediction and loss
-        pred = model(glob,cpf,npf,vtx,v0)
+        #pred = model(glob,cpf,npf,vtx,v0)
+        pred = model(glob,cpf,npf,vtx)
         loss = loss_fn(pred, y.type_as(pred))
  
         # Backpropagation
@@ -76,12 +77,13 @@ def val_loop(dataloader, nbatches, model, loss_fn, device, epoch):
             cpf = torch.Tensor(features_list[1]).to(device)
             npf = torch.Tensor(features_list[2]).to(device)
             vtx = torch.Tensor(features_list[3]).to(device)
-            v0 = torch.Tensor(features_list[4]).to(device)
+            #v0 = torch.Tensor(features_list[4]).to(device)
             #pxl = torch.Tensor(features_list[4]).to(device)
             y = torch.Tensor(truth_list[0]).to(device)    
             # Compute prediction and loss
             _, labels = y.max(dim=1)
-            pred = model(glob,cpf,npf,vtx,v0)
+            #pred = model(glob,cpf,npf,vtx,v0)
+            pred = model(glob,cpf,npf,vtx)
             
             test_loss += loss_fn(pred, y.type_as(pred)).item()
             correct += (pred.argmax(1) == labels).type(torch.float).sum().item()

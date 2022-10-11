@@ -38,20 +38,20 @@ class InputProcess(nn.Module):
     def __init__(self, **kwargs):
         super(InputProcess, self).__init__(**kwargs)
         
-        self.cpf_bn = torch.nn.BatchNorm1d(16, eps = 0.001, momentum = 0.6)
-        self.cpf_conv1 = InputConv(16,64)
+        self.cpf_bn = torch.nn.BatchNorm1d(8, eps = 0.001, momentum = 0.6)
+        self.cpf_conv1 = InputConv(8,64)
         self.cpf_conv2 = InputConv(64,32)
         self.cpf_conv3 = InputConv(32,32)
         self.cpf_conv4 = InputConv(32,8)
         
-        self.npf_bn = torch.nn.BatchNorm1d(8, eps = 0.001, momentum = 0.6)
-        self.npf_conv1 = InputConv(8,32)
+        self.npf_bn = torch.nn.BatchNorm1d(2, eps = 0.001, momentum = 0.6)
+        self.npf_conv1 = InputConv(2,32)
         self.npf_conv2 = InputConv(32,16)
         self.npf_conv3 = InputConv(16,4)
 #        self.npf_conv4 = InputConv(128,128)
         
-        self.vtx_bn = torch.nn.BatchNorm1d(14, eps = 0.001, momentum = 0.6)
-        self.vtx_conv1 = InputConv(14,64)
+        self.vtx_bn = torch.nn.BatchNorm1d(1, eps = 0.001, momentum = 0.6)
+        self.vtx_conv1 = InputConv(1,64)
         self.vtx_conv2 = InputConv(64,32)
         self.vtx_conv3 = InputConv(32,32)
         self.vtx_conv4 = InputConv(32,8)
@@ -124,7 +124,7 @@ class DenseClassifier(nn.Module):
 class DeepJet(nn.Module):
 
     def __init__(self,
-                 num_classes = 6,
+                 num_classes = 5,
                  **kwargs):
         super(DeepJet, self).__init__(**kwargs)
         self.InputProcess = InputProcess()
@@ -132,10 +132,10 @@ class DeepJet(nn.Module):
         
         self.Linear = nn.Linear(100, num_classes)
         
-        self.global_bn = torch.nn.BatchNorm1d(15, eps = 0.001, momentum = 0.6)
+        self.global_bn = torch.nn.BatchNorm1d(9, eps = 0.001, momentum = 0.6)
         self.cpf_lstm = torch.nn.LSTM(input_size = 8, hidden_size = 150, num_layers = 1, batch_first = True)
-        self.npf_lstm = torch.nn.LSTM(input_size = 4, hidden_size = 50, num_layers = 1, batch_first = True)
-        self.vtx_lstm = torch.nn.LSTM(input_size = 8, hidden_size = 50, num_layers = 1, batch_first = True)
+        self.npf_lstm = torch.nn.LSTM(input_size = 2, hidden_size = 50, num_layers = 1, batch_first = True)
+        self.vtx_lstm = torch.nn.LSTM(input_size = 1, hidden_size = 50, num_layers = 1, batch_first = True)
 #        self.pxl_lstm = torch.nn.LSTM(input_size = 128, hidden_size = 50, num_layers = 1, batch_first = True)
 
         self.cpf_bn = torch.nn.BatchNorm1d(150, eps = 0.001, momentum = 0.6)
