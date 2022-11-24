@@ -1,6 +1,8 @@
 DeepJet: Repository for training and evaluation of deep neural networks for Jet identification
 ===============================================================================
 
+*These instructions pertain to DeepJet repo of the DeepJet authors. For FCC specific instructions, see the **docs** folder.* 
+
 This package depends on DeepJetCore 3.X (https://github.com/DL4Jets/DeepJetCore). (but it should still work for DJC2)
 
 Usage

@@ -31,14 +31,20 @@ from pytorch_deepjet_transformer_V0 import DeepJetTransformerV0
 from torch.optim import Adam, SGD
 from tqdm import tqdm
 
+import DeepJetCore
+
+import uproot
+
 inputdatafiles=[]
 inputdir=None
 
 def test_loop(dataloader, model, nbatches, pbar):
+ 
     predictions = 0
     global_vars = 0
     y_vars = 0
-    
+    spectator_vars = 0
+
     with torch.no_grad():
         for b in range(nbatches):
             features_list, truth_list = next(dataloader)
@@ -46,23 +52,29 @@ def test_loop(dataloader, model, nbatches, pbar):
             cpf = torch.Tensor(features_list[1]).to(device)
             npf = torch.Tensor(features_list[2]).to(device)
             vtx = torch.Tensor(features_list[3]).to(device)
+            v0 = torch.Tensor(features_list[4]).to(device)
+            ###
+            spec = torch.Tensor(features_list[5]).to(device)
+            ###
             #pxl = torch.Tensor(features_list[4]).to(device)
             y = torch.Tensor(truth_list[0]).to(device)    
             # Compute prediction
-            pred = nn.Softmax(dim=1)(model(glob,cpf,npf,vtx)).cpu().numpy()
+            pred = nn.Softmax(dim=1)(model(glob,cpf,npf,vtx,v0)).cpu().numpy()
             if b == 0:
                 predictions = pred 
                 global_vars = glob.cpu().detach().numpy()
                 y_vars = y.cpu().detach().numpy()
+                spectator_vars = spec.cpu().detach().numpy()
             else:
                 predictions = np.concatenate((predictions, pred), axis=0)
                 global_vars = np.concatenate((global_vars, glob.cpu().detach().numpy()), axis=0)
                 y_vars = np.concatenate((y_vars, y.cpu().detach().numpy()), axis=0)
+                spectator_vars = np.concatenate((spectator_vars, spec.cpu().detach().numpy()), axis=0)
             desc = 'Predicting probs : '
             pbar.set_description(desc)
             pbar.update(1)
         
-    return predictions, y_vars, global_vars
+    return predictions, y_vars, global_vars, spectator_vars
 
 ## prepare input lists for different file formats
 if args.inputSourceFileList[-6:] == ".djcdc":
@@ -105,6 +117,7 @@ if args.inputSourceFileList[-6:] == ".djcdc" and not args.trainingDataCollection
         batchsize = 1
     print('No training data collection given. Using batch size of',batchsize)
 else:
+    print(os.path.abspath(DeepJetCore.__file__))
     dc = DataCollection(args.trainingDataCollection)
 
 outputs = []
@@ -151,12 +164,35 @@ for inputfile in inputdatafiles:
     #print(predicted[0])    
     #print("truths...")
     #print(predicted[1])    
-    #print("globs...")
-    #print(predicted[2])
+    print("globs...")
+    print(predicted[2])
     predict_np = predicted[0] 
     truths_np = predicted[1]
     globs_np = predicted[2]
-    np.savez("raw_predictions.npz", predict_np, truths_np, globs_np) 
+    print("Saving npz file in {0}".format((args.inputModel).split("/")[-2]))
+    np.savez("{0}/raw_predictions.npz".format((args.inputModel).split("/")[-2]), predict_np, truths_np, globs_np)
+     
+    pred_tree={}
+    #fields=["predicted", "truths", "event_index", "jets_px", "jets_py", "jets_pz", "jets_e", "jets_m",]
+    ##fields=["event_index", "jets_px", "jets_py", "jets_pz", "jets_e", "jets_m", "predicted", "truth",]
+    fields=["event_index", "jets_px", "jets_py", "predicted", "truths",]
+    
+
+    for spec_index, field in enumerate(fields):
+        if(field=="predicted"): 
+            pred_tree[field]=predicted[0]
+            continue
+        if(field=="truths"): 
+            pred_tree[field]=predicted[1]
+            continue
+        # for now this is globs, beware!
+        pred_tree[field]=predicted[3][:,spec_index]
+ 
+    root_file = uproot.recreate("{0}/raw_predictions.root".format((args.inputModel).split("/")[-2]))
+    root_file["tree"] = pred_tree
+    root_file.close()  
+    
+    #Should also save as root file but this will require some thinking (e.g. will I save a vect of globs, rewrite file w/ pyroot/uproot fnc defined elsewhere? would have to keep track of position of vars) 
     quit()   
     x = td.transferFeatureListToNumpy()
     w = td.transferWeightListToNumpy()

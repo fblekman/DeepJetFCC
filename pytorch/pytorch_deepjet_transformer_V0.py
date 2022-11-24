@@ -150,9 +150,9 @@ class DenseClassifier(nn.Module):
     def __init__(self, **kwargs):
         super(DenseClassifier, self).__init__(**kwargs)
              
-        self.LinLayer1 = LinLayer(137,137)
-        self.LinLayer2 = LinLayer(137,137)
-        self.LinLayer3 = LinLayer(137,137)
+        self.LinLayer1 = LinLayer(135,135)
+        self.LinLayer2 = LinLayer(135,135)
+        self.LinLayer3 = LinLayer(135,135)
 
     def forward(self, x):
         
@@ -308,10 +308,10 @@ class DeepJetTransformerV0(nn.Module):
         self.InputProcess = InputProcess()
         self.DenseClassifier = DenseClassifier()
         ###########self.Linear = nn.Linear(143, num_classes)
-        self.Linear = nn.Linear(137, num_classes)
+        self.Linear = nn.Linear(135, num_classes)
         self.pooling = AttentionPooling()
 
-        self.global_bn = torch.nn.BatchNorm1d(9, eps = 0.001, momentum = 0.1)
+        self.global_bn = torch.nn.BatchNorm1d(7, eps = 0.001, momentum = 0.1)
 
         self.EncoderLayer = HF_TransformerEncoderLayer(d_model=128, nhead=8, dropout = 0.1)
         self.Encoder = HF_TransformerEncoder(self.EncoderLayer, num_layers=3)
