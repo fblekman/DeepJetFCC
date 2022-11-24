@@ -21,7 +21,8 @@ git clone https://github.com/Edler1/DeepJetFCC
 
 Source the singularity container, and compile DeepJetCore:
 ```
-source DeepJetFCC/sing_env.sh && cd DeepJetCore 
+source DeepJetFCC/sing_env.sh 
+cd DeepJetCore 
 source docker_env.sh
 cd compiled && make -j8 
 ```
