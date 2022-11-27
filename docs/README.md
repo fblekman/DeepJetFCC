@@ -112,7 +112,7 @@ Predicting
 To predict/infer using a trained model the predict_pytorch.py script is run. Some of the above steps (like requesting a GPU) will be helpful.
 
 ```
-python3 pytorch/predict_pytorch.py <DeepJet/DeepJetTransformer/DeepJetTransformerV0> <output dir of training>/checkpoint.pth <output dir of training>/trainsamples.djcdc <dir with test sample stored as rootfiles>/filelist.txt <output directory>
+python3 pytorch/predict_pytorch.py <DeepJet/DeepJetTransformer/DeepJetTransformerV0> <output dir of training>/checkpoint.pth <output dir of training>/trainsamples.djcdc <dir with test sample stored as rootfiles>/filelist.txt <output directory> -b 4000
 ```
 
 The output will be a .npz file and a .root file saved to the training directory.
