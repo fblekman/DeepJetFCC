@@ -5,8 +5,9 @@ import uproot as u
 import awkward as ak
 import pandas as pd
 
+import os
 
-print("Running the updated version...")
+print("Running the updated version... This is 1805_shortFiles...")
 
 
 GLOBAL_PREFIX = ""
@@ -28,8 +29,8 @@ def uproot_root2array(fname, treename, stop=None, branches=None):
     return new_arr
 
 def uproot_tree_to_numpy(fname, inbranches_listlist, nMaxlist, nevents, treename="deepntuplizer/tree", stop=None, branches=None, flat=True):
-    
     #open the root file, tree and get the branches list wanted for building the array
+    ######tree  = u.open(fname)[treename]
     tree  = u3.open(fname)[treename]
     branches = [tree[branch_name].array() for branch_name in inbranches_listlist]
         
@@ -122,17 +123,21 @@ class TrainData_ParT(TrainData):
         self.description = "ParT inputs"
         
         #self.truth_branches = ['isB','isBB','isGBB','isLeptonicB','isLeptonicB_C','isC','isGCC','isCC','isUD','isS','isG']
-        self.truth_branches = ['isB','isC','isU','isD','isS']
+        ##self.truth_branches = ['isB','isC','isU','isD','isS']
+        self.truth_branches = ['isB_Z','isC_Z','isU_Z','isD_Z','isS_Z']
         #self.undefTruth=['isUndefined', 'isPU']
-        self.undefTruth=['isUndefined']
+        ##self.undefTruth=['isUndefined']
+        self.undefTruth=['isUndefined_Z']
         self.weightbranchX='jets_pt'
         self.weightbranchY='jets_eta'
         self.remove = True
-        self.referenceclass= 'isB'  #'flatten'  #Choose 'flatten' for flat or one of the truth branch for ref
+        ##self.referenceclass= 'isB'  #'flatten'  #Choose 'flatten' for flat or one of the truth branch for ref
+        self.referenceclass= 'isB_Z'  #'flatten'  #Choose 'flatten' for flat or one of the truth branch for ref
         #self.red_classes = ['cat_B','cat_C','cat_UDS','cat_G'] #reduced classes (flat only)
         self.red_classes = ['cat_B','cat_C','cat_U','cat_D','cat_S']
         #self.truth_red_fusion = [('isB','isBB','isGBB','isLeptonicB','isLeptonicB_C'),('isC','isGCC','isCC'),('isUD','isS'),('isG')] #Indicates how you are making the fusion of your truth branches to the reduced classes for the flat reweighting
-        self.truth_red_fusion = [('isB'),('isC'),('isU'),('isD'),('isS')]
+        ##self.truth_red_fusion = [('isB'),('isC'),('isU'),('isD'),('isS')]
+        self.truth_red_fusion = [('isB_Z'),('isC_Z'),('isU_Z'),('isD_Z'),('isS_Z')]
         ##self.class_weights = np.array([1.00,1.00,2.5,5.0], dtype=float)  #Ratio between our reduced classes (flat only)
         ##self.weight_binX = np.array([15, 20, 26, 35, 46, 61, 80, 106, 141, 186, 247, 326, 432, 571, 756, 1000],dtype=float) #Flat reweighting
         #self.weight_binX = np.arange(100,2001,100)
@@ -174,12 +179,12 @@ class TrainData_ParT(TrainData):
                              'RPj_charged_Z0',
                              'RPj_charged_D0',
                              #'RPj_charged_Z0_sig',
-                             #'RPj_charged_D0_sig'
-                             #'RPj_charged_dTheta'
-                             #'RPj_charged_dPhi'
-                             #'RPj_charged_pRel'
-                             'RPj_charged_isMuon'
-                             #'RPj_charged_isElectron'
+                             #'RPj_charged_D0_sig',
+                             #'RPj_charged_dTheta',
+                             #'RPj_charged_dPhi',
+                             #'RPj_charged_pRel',
+                             'RPj_charged_isMuon',
+                             #####'RPj_charged_is_Kaon_smearedUniform010',
                              ]
         self.n_cpf = 25
 
@@ -190,8 +195,17 @@ class TrainData_ParT(TrainData):
         ]
         self.n_vtx = 4
 
+        self.v0_branches = ['sv_mass','sv_p','sv_ntracks','sv_dxy','sv_d3d',
+        ]
+        self.n_v0 = 4
+        
+        # These are the spectator variables relevant during inference. They have the same struct as glob vars.
+        self.spectator_branches = ['event_index', 'jets_px', 'jets_py',
+        ]
+        
         #self.reduced_truth = ['isB','isBB','isGBB','isLeptonicB','isLeptonicB_C','isC','isGCC','isCC','isUD','isS','isG']
-        self.reduced_truth = ['isB','isC','isU','isD','isS']
+        ##self.reduced_truth = ['isB','isC','isU','isD','isS']
+        self.reduced_truth = ['isB_Z','isC_Z','isU_Z','isD_Z','isS_Z']
 
         
     def createWeighterObjects(self, allsourcefiles):
@@ -259,7 +273,8 @@ class TrainData_ParT(TrainData):
         
         def reduceTruth(uproot_arrays):
             
-            b = uproot_arrays[b'isB']
+            #b = uproot_arrays[b'isB']
+            b = uproot_arrays[b'isB_Z']
             
             #bb = uproot_arrays[b'isBB']
             #gbb = uproot_arrays[b'isGBB']
@@ -268,13 +283,17 @@ class TrainData_ParT(TrainData):
             #blc = uproot_arrays[b'isLeptonicB_C']
             #lepb = bl+blc
             
-            c = uproot_arrays[b'isC']
+            #c = uproot_arrays[b'isC']
+            c = uproot_arrays[b'isC_Z']
             #cc = uproot_arrays[b'isCC']
             #gcc = uproot_arrays[b'isGCC']
             
-            u = uproot_arrays[b'isU']
-            d = uproot_arrays[b'isD']
-            s = uproot_arrays[b'isS']
+            #u = uproot_arrays[b'isU']
+            #d = uproot_arrays[b'isD']
+            #s = uproot_arrays[b'isS']
+            u = uproot_arrays[b'isU_Z']
+            d = uproot_arrays[b'isD_Z']
+            s = uproot_arrays[b'isS_Z']
             #uds = ud+s
             
             #g = uproot_arrays[b'isG']
@@ -312,6 +331,13 @@ class TrainData_ParT(TrainData):
                                          self.vtx_branches,self.n_vtx,self.nsamples,
                                      treename='deepntuplizer/tree', flat = False)
 
+        x_v0 = uproot_tree_to_numpy(filename,
+                                         self.v0_branches,self.n_v0,self.nsamples,
+                                     treename='deepntuplizer/tree', flat = False)
+        
+        x_spectator = uproot_tree_to_numpy(filename,
+                                        self.spectator_branches,1,self.nsamples,
+                                        treename='deepntuplizer/tree', flat = True)
         #cpf_pts = uproot_tree_to_numpy(filename,
         #                                self.cpf_pts_branches,self.n_cpf,self.nsamples,
         #                                treename='deepntuplizer/tree', flat = True)
@@ -336,6 +362,8 @@ class TrainData_ParT(TrainData):
         x_cpf = x_cpf.astype(dtype='float32', order='C')
         x_npf = x_npf.astype(dtype='float32', order='C')
         x_vtx = x_vtx.astype(dtype='float32', order='C')
+        x_v0 = x_v0.astype(dtype='float32', order='C')
+        x_spectator = x_spectator.astype(dtype='float32', order='C')
         #cpf_pts = cpf_pts.astype(dtype='float32', order='C')
         #npf_pts = npf_pts.astype(dtype='float32', order='C')
         #vtx_pts = vtx_pts.astype(dtype='float32', order='C')
@@ -361,7 +389,9 @@ class TrainData_ParT(TrainData):
             print("..............................")
             #exit()
             notremoves=weighterobjects['weigther'].createNotRemoveIndices(for_remove, use_uproot = True)
-            undef=for_remove['isUndefined']
+            ######notremoves=weighterobjects['weigther'].createNotRemoveIndices(for_remove)
+            #undef=for_remove['isUndefined']
+            undef=for_remove['isUndefined_Z']
             notremoves-=undef
             ##pu=for_remove['isPU']
             ##notremoves-=pu
@@ -384,6 +414,8 @@ class TrainData_ParT(TrainData):
             x_cpf=x_cpf[notremoves > 0]
             x_npf=x_npf[notremoves > 0]
             x_vtx=x_vtx[notremoves > 0]
+            x_v0=x_v0[notremoves > 0]
+            x_spectator=x_spectator[notremoves > 0]
             #cpf_pts=cpf_pts[notremoves > 0]
             #npf_pts=npf_pts[notremoves > 0]
             #vtx_pts=vtx_pts[notremoves > 0]
@@ -397,6 +429,8 @@ class TrainData_ParT(TrainData):
         x_cpf = np.where(np.isfinite(x_cpf), x_cpf, 0)
         x_npf = np.where(np.isfinite(x_npf), x_npf, 0)
         x_vtx = np.where(np.isfinite(x_vtx), x_vtx, 0)
+        x_v0 = np.where(np.isfinite(x_v0), x_v0, 0)
+        x_spectator = np.where(np.isfinite(x_spectator) , x_spectator, 0)
         #cpf_pts = np.where(np.isfinite(cpf_pts), cpf_pts, 0)
         #npf_pts = np.where(np.isfinite(npf_pts), npf_pts, 0)
         #vtx_pts = np.where(np.isfinite(vtx_pts), vtx_pts, 0)
@@ -410,7 +444,11 @@ class TrainData_ParT(TrainData):
         print(x_npf)
         print("x_vtx shape: "+str(x_vtx.shape))
         print(x_vtx)
-        return [x_global, x_cpf, x_npf, x_vtx], [truth], []
+        print("x_v0 shape: "+str(x_v0.shape))
+        print(x_v0)
+        print("x_spectator shape: "+str(x_spectator.shape))
+        print(x_spectator)
+        return [x_global, x_cpf, x_npf, x_vtx, x_v0, x_spectator], [truth], []
 
     # defines how to write out the prediction
     def writeOutPrediction(self, predicted, features, truth, weights, outfilename, inputfile):
