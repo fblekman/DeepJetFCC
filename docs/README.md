@@ -29,6 +29,12 @@ cd compiled && make -j8
 
 Now the packages should be setup and ready for use.
 
+*The below scripts depend on numpy and pytorch which can be installed with* 
+```
+pip3 install torch
+```
+*if not already present.* 
+
 Postprocessing 
 --------------
 

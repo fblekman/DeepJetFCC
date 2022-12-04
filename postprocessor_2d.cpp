@@ -60,6 +60,18 @@ int main(int argc, char** argv){
    std::vector<int> *isC = new std::vector<int>;
    std::vector<int> *isB = new std::vector<int>;
    std::vector<int> *isUndefined = new std::vector<int>;
+   std::vector<int> *isU_ghost = new std::vector<int>;
+   std::vector<int> *isD_ghost = new std::vector<int>;
+   std::vector<int> *isS_ghost = new std::vector<int>;
+   std::vector<int> *isC_ghost = new std::vector<int>;
+   std::vector<int> *isB_ghost = new std::vector<int>;
+   std::vector<int> *isUndefined_ghost = new std::vector<int>;
+   std::vector<int> *isU_Z = new std::vector<int>;
+   std::vector<int> *isD_Z = new std::vector<int>;
+   std::vector<int> *isS_Z = new std::vector<int>;
+   std::vector<int> *isC_Z = new std::vector<int>;
+   std::vector<int> *isB_Z = new std::vector<int>;
+   std::vector<int> *isUndefined_Z = new std::vector<int>;
    //std::vector<int> *Z_flavour = new std::vector<int>;
    
    //Jet-level variables
@@ -145,6 +157,18 @@ int main(int argc, char** argv){
    t1->SetBranchAddress("isC",&isC);
    t1->SetBranchAddress("isB",&isB);
    t1->SetBranchAddress("isUndefined",&isUndefined);
+   t1->SetBranchAddress("isU_ghost",&isU_ghost);
+   t1->SetBranchAddress("isD_ghost",&isD_ghost);
+   t1->SetBranchAddress("isS_ghost",&isS_ghost);
+   t1->SetBranchAddress("isC_ghost",&isC_ghost);
+   t1->SetBranchAddress("isB_ghost",&isB_ghost);
+   t1->SetBranchAddress("isUndefined_ghost",&isUndefined_ghost);
+   t1->SetBranchAddress("isU_Z",&isU_Z);
+   t1->SetBranchAddress("isD_Z",&isD_Z);
+   t1->SetBranchAddress("isS_Z",&isS_Z);
+   t1->SetBranchAddress("isC_Z",&isC_Z);
+   t1->SetBranchAddress("isB_Z",&isB_Z);
+   t1->SetBranchAddress("isUndefined_Z",&isUndefined_Z);
    //t1->SetBranchAddress("Z_flavour",&Z_flavour);
 
    t1->SetBranchAddress("jets_p",&jets_p);
@@ -248,6 +272,18 @@ int main(int argc, char** argv){
    Int_t isC_;
    Int_t isB_;
    Int_t isUndefined_;
+   Int_t isU_ghost_;
+   Int_t isD_ghost_;
+   Int_t isS_ghost_;
+   Int_t isC_ghost_;
+   Int_t isB_ghost_;
+   Int_t isUndefined_ghost_;
+   Int_t isU_Z_;
+   Int_t isD_Z_;
+   Int_t isS_Z_;
+   Int_t isC_Z_;
+   Int_t isB_Z_;
+   Int_t isUndefined_Z_;
    //Int_t Z_flavour_;
 
    Float_t jets_p_;
@@ -335,6 +371,18 @@ int main(int argc, char** argv){
    newtree->Branch("isC", &isC_);
    newtree->Branch("isB", &isB_);
    newtree->Branch("isUndefined", &isUndefined_);
+   newtree->Branch("isU_ghost", &isU_ghost_);
+   newtree->Branch("isD_ghost", &isD_ghost_);
+   newtree->Branch("isS_ghost", &isS_ghost_);
+   newtree->Branch("isC_ghost", &isC_ghost_);
+   newtree->Branch("isB_ghost", &isB_ghost_);
+   newtree->Branch("isUndefined_ghost", &isUndefined_ghost_);
+   newtree->Branch("isU_Z", &isU_Z_);
+   newtree->Branch("isD_Z", &isD_Z_);
+   newtree->Branch("isS_Z", &isS_Z_);
+   newtree->Branch("isC_Z", &isC_Z_);
+   newtree->Branch("isB_Z", &isB_Z_);
+   newtree->Branch("isUndefined_Z", &isUndefined_Z_);
    //newtree->Branch("Z_flavour", &Z_flavour_);
 
    newtree->Branch("jets_p", &jets_p_);
@@ -409,8 +457,9 @@ int main(int argc, char** argv){
    newtree->Branch("v0_dxy", &v0_dxy_, "v0_dxy[nV0]/F");
    newtree->Branch("v0_d3d", &v0_d3d_, "v0_d3d[nV0]/F");
    
-   //for(int i=0; i<nentries; ++i){
-   for(int i=0; i<5000; ++i){
+   for(int i=0; i<nentries; ++i){
+   //for(int i=0; i<5000; ++i){
+   //for(int i=0; i<10; ++i){
    std::cout<<i<<"  "<<(*jets_p).size()<<std::endl;
      for(int j=0; j<(*jets_p).size(); ++j){
      //for(int j=0; j<2; ++j){
@@ -419,7 +468,7 @@ int main(int argc, char** argv){
        
        event_index = i;
        jet_index = 0;
-       std::cout<<" "<<" with size "<<(*isU).size()<<std::endl;
+       //std::cout<<" "<<" with size "<<(*isU).size()<<std::endl;
         
        isU_ = (*isU)[j];
        isD_ = (*isD)[j];
@@ -427,6 +476,18 @@ int main(int argc, char** argv){
        isC_ = (*isC)[j];
        isB_ = (*isB)[j];
        isUndefined_ = (*isUndefined)[j];
+       isU_ghost_ = (*isU_ghost)[j];
+       isD_ghost_ = (*isD_ghost)[j];
+       isS_ghost_ = (*isS_ghost)[j];
+       isC_ghost_ = (*isC_ghost)[j];
+       isB_ghost_ = (*isB_ghost)[j];
+       isUndefined_ghost_ = (*isUndefined_ghost)[j];
+       isU_Z_ = (*isU_Z)[j];
+       isD_Z_ = (*isD_Z)[j];
+       isS_Z_ = (*isS_Z)[j];
+       isC_Z_ = (*isC_Z)[j];
+       isB_Z_ = (*isB_Z)[j];
+       isUndefined_Z_ = (*isUndefined_Z)[j];
        //Z_flavour_ = (*Z_flavour)[j];
 
        jets_p_ = (*jets_p)[j];
@@ -443,6 +504,7 @@ int main(int argc, char** argv){
        nNRP = (*jets_nRP_neutral)[j];
        nSV = (*sv_p)[j].size();
        nV0 = (*v0_p)[j].size();
+       //std::cout<<"nSV, nV0 = "<<nSV<<", "<<nV0<<std::endl;
       
        jets_nRP_neutral_ = (*jets_nRP_neutral)[j];
        jets_pt_ = (*jets_pt)[j];
@@ -486,20 +548,20 @@ int main(int argc, char** argv){
        std::copy((*sv_dxy)[j].begin(), (*sv_dxy)[j].end(), sv_dxy_);
        std::copy((*sv_d3d)[j].begin(), (*sv_d3d)[j].end(), sv_d3d_);
 
-       //std::copy((*v0_pid)[j].begin(), (*v0_pid)[j].end(), v0_pid_);
-       //std::copy((*v0_mass)[j].begin(), (*v0_mass)[j].end(), v0_mass_);
-       //std::copy((*v0_p)[j].begin(), (*v0_p)[j].end(), v0_p_);
-       //std::copy((*v0_ntracks)[j].begin(), (*v0_ntracks)[j].end(), v0_ntracks_);
-       //std::copy((*v0_chi2)[j].begin(), (*v0_chi2)[j].end(), v0_chi2_);
-       //std::copy((*v0_normchi2)[j].begin(), (*v0_normchi2)[j].end(), v0_normchi2_);
-       //std::copy((*v0_ndf)[j].begin(), (*v0_ndf)[j].end(), v0_ndf_);
-       //std::copy((*v0_theta)[j].begin(), (*v0_theta)[j].end(), v0_theta_);
-       //std::copy((*v0_phi)[j].begin(), (*v0_phi)[j].end(), v0_phi_);
-       /////////////std::copy((*v0_thetarel)[j].begin(), (*v0_thetarel)[j].end(), v0_thetarel_);
-       /////////////std::copy((*v0_phirel)[j].begin(), (*v0_phirel)[j].end(), v0_phirel_);
-       //std::copy((*v0_costhetasvpv)[j].begin(), (*v0_costhetasvpv)[j].end(), v0_costhetasvpv_);
-       //std::copy((*v0_dxy)[j].begin(), (*v0_dxy)[j].end(), v0_dxy_);
-       //std::copy((*v0_d3d)[j].begin(), (*v0_d3d)[j].end(), v0_d3d_);
+       std::copy((*v0_pid)[j].begin(), (*v0_pid)[j].end(), v0_pid_);
+       std::copy((*v0_mass)[j].begin(), (*v0_mass)[j].end(), v0_mass_);
+       std::copy((*v0_p)[j].begin(), (*v0_p)[j].end(), v0_p_);
+       std::copy((*v0_ntracks)[j].begin(), (*v0_ntracks)[j].end(), v0_ntracks_);
+       std::copy((*v0_chi2)[j].begin(), (*v0_chi2)[j].end(), v0_chi2_);
+       std::copy((*v0_normchi2)[j].begin(), (*v0_normchi2)[j].end(), v0_normchi2_);
+       std::copy((*v0_ndf)[j].begin(), (*v0_ndf)[j].end(), v0_ndf_);
+       std::copy((*v0_theta)[j].begin(), (*v0_theta)[j].end(), v0_theta_);
+       std::copy((*v0_phi)[j].begin(), (*v0_phi)[j].end(), v0_phi_);
+       ///////////std::copy((*v0_thetarel)[j].begin(), (*v0_thetarel)[j].end(), v0_thetarel_);
+       ///////////std::copy((*v0_phirel)[j].begin(), (*v0_phirel)[j].end(), v0_phirel_);
+       std::copy((*v0_costhetasvpv)[j].begin(), (*v0_costhetasvpv)[j].end(), v0_costhetasvpv_);
+       std::copy((*v0_dxy)[j].begin(), (*v0_dxy)[j].end(), v0_dxy_);
+       std::copy((*v0_d3d)[j].begin(), (*v0_d3d)[j].end(), v0_d3d_);
        newtree->Fill();
      }
    }
@@ -517,6 +579,18 @@ int main(int argc, char** argv){
    delete isC;
    delete isB;
    delete isUndefined;
+   delete isU_ghost;
+   delete isD_ghost;
+   delete isS_ghost;
+   delete isC_ghost;
+   delete isB_ghost;
+   delete isUndefined_ghost;
+   delete isU_Z;
+   delete isD_Z;
+   delete isS_Z;
+   delete isC_Z;
+   delete isB_Z;
+   delete isUndefined_Z;
    //delete Z_flavour;
 
    delete jets_p;
