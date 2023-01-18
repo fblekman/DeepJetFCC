@@ -310,6 +310,6 @@ class training_base(object):
                     val_loss_numpy.append(val_loss)
                     epoch_numpy.append(self.trainedepoches)
                     np.savez(self.outputDir+"training_params.npz", train_loss=np.array(train_loss_numpy), val_loss=np.array(val_loss_numpy), epoch=np.array(epoch_numpy))
-                    self.saveModel(self.model, self.optimizer, self.trainedepoches, self.scheduler, self.best_loss, is_best = False)
+                    ###############self.saveModel(self.model, self.optimizer, self.trainedepoches, self.scheduler, self.best_loss, is_best = False)
                 
                 ###################traingen.shuffleFilelist()

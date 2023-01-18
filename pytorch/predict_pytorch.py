@@ -124,6 +124,9 @@ outputs = []
 os.system('mkdir -p '+args.outputDir)
 
 for inputfile in inputdatafiles:
+
+    print(inputfile)
+    #continue
     
     print('predicting ',inputdir+"/"+inputfile)
     
@@ -170,7 +173,7 @@ for inputfile in inputdatafiles:
     truths_np = predicted[1]
     globs_np = predicted[2]
     print("Saving npz file in {0}".format((args.inputModel).split("/")[-2]))
-    np.savez("{0}/raw_predictions.npz".format((args.inputModel).split("/")[-2]), predict_np, truths_np, globs_np)
+    np.savez("{0}/raw_predictions_{1}.npz".format((args.inputModel).split("/")[-2], inputfile[6:-5]), predict_np, truths_np, globs_np)
      
     pred_tree={}
     #fields=["predicted", "truths", "event_index", "jets_px", "jets_py", "jets_pz", "jets_e", "jets_m",]
@@ -188,26 +191,27 @@ for inputfile in inputdatafiles:
         # for now this is globs, beware!
         pred_tree[field]=predicted[3][:,spec_index]
  
-    root_file = uproot.recreate("{0}/raw_predictions.root".format((args.inputModel).split("/")[-2]))
+    root_file = uproot.recreate("{0}/raw_predictions_{1}.root".format((args.inputModel).split("/")[-2], inputfile[6:-5]))
     root_file["tree"] = pred_tree
     root_file.close()  
     
+    
     #Should also save as root file but this will require some thinking (e.g. will I save a vect of globs, rewrite file w/ pyroot/uproot fnc defined elsewhere? would have to keep track of position of vars) 
-    quit()   
-    x = td.transferFeatureListToNumpy()
-    w = td.transferWeightListToNumpy()
-    y = td.transferTruthListToNumpy()
-
-    td.clear()
-    gen.clear()
-    
-    if not type(predicted) == list: #circumvent that keras return only an array if there is just one list item
-        predicted = [predicted]   
-    overwrite_outname = td.writeOutPrediction(predicted, x, y, w, args.outputDir + "/" + outfilename, use_inputdir+"/"+inputfile)
-    if overwrite_outname is not None:
-        outfilename = overwrite_outname
-    outputs.append(outfilename)
-    
-with open(args.outputDir + "/outfiles.txt","w") as f:
-    for l in outputs:
-        f.write(l+'\n')
+####    quit()   
+####    x = td.transferFeatureListToNumpy()
+####    w = td.transferWeightListToNumpy()
+####    y = td.transferTruthListToNumpy()
+####
+####    td.clear()
+####    gen.clear()
+####    
+####    if not type(predicted) == list: #circumvent that keras return only an array if there is just one list item
+####        predicted = [predicted]   
+####    overwrite_outname = td.writeOutPrediction(predicted, x, y, w, args.outputDir + "/" + outfilename, use_inputdir+"/"+inputfile)
+####    if overwrite_outname is not None:
+####        outfilename = overwrite_outname
+####    outputs.append(outfilename)
+####    
+####with open(args.outputDir + "/outfiles.txt","w") as f:
+####    for l in outputs:
+####        f.write(l+'\n')

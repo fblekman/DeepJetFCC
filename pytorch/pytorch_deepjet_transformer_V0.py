@@ -56,8 +56,8 @@ class InputProcess(nn.Module):
     def __init__(self, **kwargs):
         super(InputProcess, self).__init__(**kwargs)
         
-        self.cpf_bn0 = torch.nn.BatchNorm1d(7, eps = 0.001, momentum = 0.1)
-        self.cpf_conv1 = InputConv(7,64)
+        self.cpf_bn0 = torch.nn.BatchNorm1d(8, eps = 0.001, momentum = 0.1)
+        self.cpf_conv1 = InputConv(8,64)
         self.cpf_conv2 = InputConv(64,128)
         self.cpf_conv3 = InputConv(128,128)
         

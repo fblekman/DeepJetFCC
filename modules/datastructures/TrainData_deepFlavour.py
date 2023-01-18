@@ -57,8 +57,6 @@ def uproot_tree_to_numpy(fname, inbranches_listlist, nMaxlist, nevents, treename
                     
         output_array = np.transpose(output_array, (0, 2, 1))
     
-    ### Debugging lines ###
-    print(output_array.shape)
     
     return  output_array
 
@@ -184,7 +182,8 @@ class TrainData_ParT(TrainData):
                              #'RPj_charged_dPhi',
                              #'RPj_charged_pRel',
                              'RPj_charged_isMuon',
-                             #####'RPj_charged_is_Kaon_smearedUniform010',
+                             'RPj_charged_is_Kaon_smearedUniform090',
+                             ###'RPj_charged_is_Kaon',
                              ]
         self.n_cpf = 25
 
@@ -383,10 +382,6 @@ class TrainData_ParT(TrainData):
    #             stop = None,
     #            branches = b
      #       )
-            print("..............................")
-            print(type(weighterobjects['weigther']))
-            print(weighterobjects['weigther'])
-            print("..............................")
             #exit()
             notremoves=weighterobjects['weigther'].createNotRemoveIndices(for_remove, use_uproot = True)
             ######notremoves=weighterobjects['weigther'].createNotRemoveIndices(for_remove)
@@ -436,18 +431,6 @@ class TrainData_ParT(TrainData):
         #vtx_pts = np.where(np.isfinite(vtx_pts), vtx_pts, 0)
         
         #return [x_global, x_cpf, x_npf, x_vtx, cpf_pts, npf_pts, vtx_pts], [truth], []
-        print("x_global shape: "+str(x_global.shape))
-        print(x_global)
-        print("x_cpf shape: "+str(x_cpf.shape))
-        print(x_cpf)
-        print("x_npf shape: "+str(x_npf.shape))
-        print(x_npf)
-        print("x_vtx shape: "+str(x_vtx.shape))
-        print(x_vtx)
-        print("x_v0 shape: "+str(x_v0.shape))
-        print(x_v0)
-        print("x_spectator shape: "+str(x_spectator.shape))
-        print(x_spectator)
         return [x_global, x_cpf, x_npf, x_vtx, x_v0, x_spectator], [truth], []
 
     # defines how to write out the prediction

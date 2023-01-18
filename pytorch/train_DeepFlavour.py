@@ -36,8 +36,10 @@ def cross_entropy_one_hot(input, target):
     return nn.CrossEntropyLoss()(input, labels)
 
 #num_epochs = 80
+#num_epochs = 50
+num_epochs = 70
 #num_epochs = 120
-num_epochs = 5
+#num_epochs = 5
 #num_epochs = 20
 #num_epochs = 1
 
@@ -47,8 +49,7 @@ mil = list(range(num_epochs - lr_epochs, num_epochs))
 
 #######model = DeepJet(num_classes = 5) #DeepJetTransformer(num_classes = 5)
 #model = DeepJetTransformer(num_classes = 5)
-#model = DeepJetTransformerV0(num_classes = 5)
-model = DeepJetTransformer_23112022(num_classes = 5)
+model = DeepJetTransformerV0(num_classes = 5)
 
 print(model)
 pytorch_total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
