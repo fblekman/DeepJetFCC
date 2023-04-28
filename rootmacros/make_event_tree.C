@@ -97,15 +97,15 @@ void do_stuff(TString filename){
     TTree *outtree = new TTree("event","event");
 
     outtree->Branch("event_index", &t1_event_index, "event_index/F");
-    outtree->Branch("j1_jets_e", &t1_jets_e, "t1_jets_e/F");
-    outtree->Branch("j1_jets_px", &t1_jets_px, "t1_jets_px/F");
-    outtree->Branch("j1_jets_py", &t1_jets_py, "t1_jets_py/F");
-    outtree->Branch("j1_jets_pz", &t1_jets_pz, "t1_jets_pz/F");
-    outtree->Branch("j1_jets_m", &t1_jets_m, "t1_jets_m/F");
-    outtree->Branch("j1_jets_theta", &t1_jets_theta, "t1_jets_theta/F");
-    outtree->Branch("j1_jets_phi", &t1_jets_phi, "t1_jets_phi/F");
-    outtree->Branch("j1_predicted", t1_predicted, "t1_predicted[5]/F");
-    outtree->Branch("j1_truths", t1_truths, "t1_truths[5]/F");
+    outtree->Branch("j1_jets_e", &t1_jets_e, "j1_jets_e/F");
+    outtree->Branch("j1_jets_px", &t1_jets_px, "j1_jets_px/F");
+    outtree->Branch("j1_jets_py", &t1_jets_py, "j1_jets_py/F");
+    outtree->Branch("j1_jets_pz", &t1_jets_pz, "j1_jets_pz/F");
+    outtree->Branch("j1_jets_m", &t1_jets_m, "j1_jets_m/F");
+    outtree->Branch("j1_jets_theta", &t1_jets_theta, "j1_jets_theta/F");
+    outtree->Branch("j1_jets_phi", &t1_jets_phi, "j1_jets_phi/F");
+    outtree->Branch("j1_predicted", t1_predicted, "j1_predicted[5]/F");
+    outtree->Branch("j1_truths", t1_truths, "j1_truths[5]/F");
     
     outtree->Branch("j2_jets_e", &t2_jets_e, "j2_jets_e/F");
     outtree->Branch("j2_jets_px", &t2_jets_px, "j2_jets_px/F");
